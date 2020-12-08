@@ -986,9 +986,10 @@ bot.on('message', async (msg) => {
                         if (x) msg.reply(`You leveled up to lvl ${eco.lvl}!`);
                     }
                     break;
-                case 'kick':
-                    if (msg.member.hasPermission("ADMINISTRATOR"))
-                        break;
+                case 'postguildid':
+                    msg.reply(msg.guild.id)
+                break;
+                    
             }
         }
     }
