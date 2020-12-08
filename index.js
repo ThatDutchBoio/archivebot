@@ -65,19 +65,21 @@ function getEco(userId, guildId, username) {
     }
     return bot.getEco.get(`${userId}_${guildId}`);
 }
+
 function getModeration(userId, guildId) {
     let score = bot.getModeration.get(`${userId}_${guildId}`);
     var warnsstring = []
-    warnsstring = JSON.stringify(warns);
+    warnsstring = JSON.stringify(warnsstring);
     if (!score) {
         score = {
             id: `${userId}_${guildId}`,
-            warns : warnsstring
+            warns: warnsstring
         }
         bot.setModeration.run(score);
     }
     return bot.getModeration.get(`${userId}_${guildId}`);
 }
+
 function getCompany(userId, guildId) {
     let score = bot.getCompanies.get(`${userId}_${guildId}`);
     var x = {
@@ -102,17 +104,17 @@ function getCompany(userId, guildId) {
 
 function addCash(userId, guildId, amnt) {
     var eco = getEco(userId, guildId);
-    
+
     eco.cash += amnt;
-    
+
     bot.setEco.run(eco);
     return;
 }
 
-function checklvlroles(user,eco,guild){
+function checklvlroles(user, eco, guild) {
     const lvlroles = require("./jsonFiles/lvlroles.json");
-    for(var i in lvlroles){
-        if(eco.lvl >= lvlroles[i].levelrequired){
+    for (var i in lvlroles) {
+        if (eco.lvl >= lvlroles[i].levelrequired) {
             var role = guild.roles.cache.find(r => r.id === lvlroles[i].id)
             user.roles.add(role)
         }
@@ -124,32 +126,32 @@ function addExp(eco, amnt) {
     var x = false;
     eco.xp += amnt;
     // 10 * (5 + (5*x))
-        for(var i = eco.lvl; eco.xp >= (10 + ((10 * i) + (15.5 * i + 1)));i++){
-            eco.lvl++
-            x = true
-        }
+    for (var i = eco.lvl; eco.xp >= (10 + ((10 * i) + (15.5 * i + 1))); i++) {
+        eco.lvl++
+        x = true
+    }
 
-    
+
     bot.setEco.run(eco);
-    
+
     return x;
 }
-
+var oldRoles = new Map()
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 var lastWorked = new Map();
 bot.on('message', async (msg) => {
     if (!msg.author.bot && msg.guild.id != "367089912425480192") {
-        
+
         var user = msg.guild.members.cache.find(i => i.id === msg.author.id)
         console.log(user.user.username)
-        var eco1 = getEco(msg.author.id,msg.guild.id,msg.author.user)
+        var eco1 = getEco(msg.author.id, msg.guild.id, msg.author.user)
         const lvlroles = require("./jsonFiles/lvlroles.json");
-            for(var i in lvlroles){
-            if(eco1.lvl >= lvlroles[i].levelrequired){
+        for (var i in lvlroles) {
+            if (eco1.lvl >= lvlroles[i].levelrequired) {
                 var role = msg.guild.roles.cache.find(r => r.id === lvlroles[i].id)
-                
+
                 user.roles.add(role)
             }
         }
@@ -310,6 +312,101 @@ bot.on('message', async (msg) => {
 
                     return msg.channel.send("Invalid Job ID!");
                     break;
+                case 'ban':
+
+                    if (msg.member.hasPermission("BAN_MEMBERS") && msg.mentions.members.first() != undefined) {
+                        msg.mentions.members.first().ban();
+                        const bannedMember = new discord.MessageEmbed()
+                            .setTitle(":white_check_mark: Banned " + msg.mentions.members.first().displayName)
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                            .setTimestamp()
+                            .setColor("GREEN")
+                        msg.channel.send({
+                            embed: bannedMember
+                        })
+
+                    } else if (msg.mentions.members.first() === undefined) {
+                        const specifyMember = new discord.MessageEmbed()
+                            .setTitle(":x: Specify a user to ban!")
+                            .setColor("RED")
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                        msg.channel.send({
+                            embed: specifyMember
+                        })
+                    }
+                    break;
+                case 'warn':
+                    if (msg.member.hasPermission('ADMINISTRATOR')) {
+                        let score = getModeration(msg.mentions.members.first().id, msg.guild.id)
+                        let towarn = msg.mentions.members.first()
+                        let towarnId = msg.mentions.members.first().id
+                        let warns = score.warns
+                        warns = JSON.parse(warns)
+                        let warnmsg = msg.content.substring(args[1].length + 8, msg.content.length);
+                        if (warnmsg === "" || undefined) {
+                            warnmsg = "No reason"
+                        }
+                        warns.push(warnmsg);
+                        console.log(warns)
+                        warns = JSON.stringify(warns)
+                        score.warns = warns
+                        bot.setModeration.run(score);
+                        console.log(score.warns)
+
+                        const warnembed = new discord.MessageEmbed()
+                            .setTitle("Warned " + towarn.displayName + " for " + warnmsg)
+                            .setColor("GREEN")
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                            .setTimestamp()
+                        msg.channel.send({
+                            embed: warnembed
+                        })
+
+                    }
+                    break;
+                case 'kick':
+
+                    if (msg.member.hasPermission("KICK_MEMBERS") && msg.mentions.members.first() != undefined) {
+                        msg.mentions.members.first().kick();
+                        const bannedMember = new discord.MessageEmbed()
+                            .setTitle(":white_check_mark: kicked " + msg.mentions.members.first().displayName)
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                            .setTimestamp()
+                            .setColor("GREEN")
+                        msg.channel.send({
+                            embed: bannedMember
+                        })
+
+                    } else if (msg.mentions.members.first() === undefined) {
+                        const specifyMember = new discord.MessageEmbed()
+                            .setTitle(":x: Specify a user to kick!")
+                            .setColor("RED")
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                        msg.channel.send({
+                            embed: specifyMember
+                        })
+                    }
+                    break;
                 case 'jobs.join.admin':
                     if (msg.member.hasPermission("ADMINISTRATOR")) {
                         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
@@ -350,35 +447,16 @@ bot.on('message', async (msg) => {
                     break;
                 case 'jobs.work':
                     var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
-                    if(eco.jobid != "none"){
-                    var cooldown = jobs[eco.jobid].cooldown;
-                    if (lastWorked.has(msg.author.id) == false) {
+                    if (eco.jobid != "none") {
+                        var cooldown = jobs[eco.jobid].cooldown;
+                        if (lastWorked.has(msg.author.id) == false) {
 
-                        var z = jobs[eco.jobid].income[0];
-                        var y = jobs[eco.jobid].income[1];
-                        const a = Math.floor(Math.random() * y) + z;
-                        lastWorked.set(msg.author.id, Date.now())
-                        var amntXP = (10 + (100 * (eco.lvl / 100)))
-                        addExp(eco, amntXP)
-                        const workedEmb = new discord.MessageEmbed()
-                            .setTitle(`:white_check_mark: ${jobs[eco.jobid].message}`)
-                            .setDescription(`You earned: $${a} and ${amntXP} XP`)
-                            .setColor("GREEN")
-                            .setTimestamp()
-                        msg.channel.send(workedEmb)
-                        addCash(msg.author.id, msg.guild.id, a);
-
-                    } else {
-                        var elapsed = Math.ceil((Date.now() - lastWorked.get(msg.author.id)) / 1000)
-
-                        if (elapsed >= cooldown) {
-                            lastWorked.set(msg.author.id, Date.now());
                             var z = jobs[eco.jobid].income[0];
                             var y = jobs[eco.jobid].income[1];
-                            const a = randomIntFromInterval(z, y);
+                            const a = Math.floor(Math.random() * y) + z;
+                            lastWorked.set(msg.author.id, Date.now())
                             var amntXP = (10 + (100 * (eco.lvl / 100)))
-                            var x = addExp(eco, amntXP)
-                            if (x) msg.reply(`You leveled up to lvl ${eco.lvl}!`);
+                            addExp(eco, amntXP)
                             const workedEmb = new discord.MessageEmbed()
                                 .setTitle(`:white_check_mark: ${jobs[eco.jobid].message}`)
                                 .setDescription(`You earned: $${a} and ${amntXP} XP`)
@@ -388,16 +466,189 @@ bot.on('message', async (msg) => {
                             addCash(msg.author.id, msg.guild.id, a);
 
                         } else {
-                            msg.reply(`You can work in ${cooldown-elapsed} Second(s)`)
+                            var elapsed = Math.ceil((Date.now() - lastWorked.get(msg.author.id)) / 1000)
+
+                            if (elapsed >= cooldown) {
+                                lastWorked.set(msg.author.id, Date.now());
+                                var z = jobs[eco.jobid].income[0];
+                                var y = jobs[eco.jobid].income[1];
+                                const a = randomIntFromInterval(z, y);
+                                var amntXP = (10 + (100 * (eco.lvl / 100)))
+                                var x = addExp(eco, amntXP)
+                                if (x) msg.reply(`You leveled up to lvl ${eco.lvl}!`);
+                                const workedEmb = new discord.MessageEmbed()
+                                    .setTitle(`:white_check_mark: ${jobs[eco.jobid].message}`)
+                                    .setDescription(`You earned: $${a} and ${amntXP} XP`)
+                                    .setColor("GREEN")
+                                    .setTimestamp()
+                                msg.channel.send(workedEmb)
+                                addCash(msg.author.id, msg.guild.id, a);
+
+                            } else {
+                                msg.reply(`You can work in ${cooldown-elapsed} Second(s)`)
+                            }
                         }
+                    } else {
+                        const failedemb = new discord.MessageEmbed()
+                            .setTitle(":x: You dont have a job!")
+                            .setColor("RED")
+                            .setTimestamp()
+                        msg.channel.send(failedemb)
                     }
-                }else{
-                    const failedemb = new discord.MessageEmbed()
-                        .setTitle(":x: You dont have a job!")
-                        .setColor("RED")
-                        .setTimestamp()
-                    msg.channel.send(failedemb)
+
+                    break;
+                    case 'mute':
+                if (msg.member.hasPermission("MUTE_MEMBERS")) {
+                    if (msg.mentions.members.first() != undefined) {
+                        let toMute = msg.mentions.members.first();
+                        oldRoles.set(msg.guild.id + "_" + toMute.id, toMute.roles.cache);
+                        console.log(oldRoles.get(msg.guild.id + "_" + toMute.id))
+                        let rolescache = oldRoles.get(msg.guild.id + "_" + toMute.id)
+                        let aooga = msg.content.substring(args[1].length + 7, msg.content.length);
+                        let length = aooga.toLowerCase();
+                        console.log(length)
+                        let indentifier;
+                        if (length.includes("h")) {
+                            console.log('hours')
+                            length.replace('h', '');
+                            length = parseInt(length);
+                            indentifier = length + " Hours";
+                            length = length * 3600000;
+
+                        } else if (length.includes("d")) {
+                            console.log('days')
+                            length.replace('d', '');
+                            length = parseInt(length);
+                            indentifier = length + " Days";
+                            length = length * 86400000;
+
+                        } else if (length.includes("m")) {
+                            console.log('minutes')
+                            length.replace('m', '');
+                            length = parseInt(length);
+                            length = length * 60000
+                            indentifier = length + " Minutes";
+                        } else if (length.includes("s")) {
+                            console.log('seconds')
+                            length.replace('s', '');
+                            length = parseInt(length);
+                            indentifier = length + " Seconds";
+                            length = length * 1000
+
+                        }
+                        toMute.roles.set([])
+                        let muterole = msg.guild.roles.create({
+                            data: {
+                                name: 'muted',
+                                color: 'BLACK',
+                                permissions: [],
+                            }
+                        }).then(function (role) {
+                            const mutedEmb = new discord.MessageEmbed()
+                                .setTitle(":white_check_mark: Muted " + toMute.displayName + " for " + indentifier)
+                                .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                    dynamic: false,
+                                    format: 'png',
+                                    size: 512
+                                }))
+                                .setColor("GREEN")
+                                .setTimestamp()
+                                .setFooter("Muted by: " + msg.author.tag)
+                            toMute.roles.add(role);
+                            msg.channel.send({
+                                embed: mutedEmb
+                            })
+                            logchannel.send({
+                                embed: mutedEmb
+                            })
+                            setTimeout(() => {
+
+                                const unmutedEmb = new discord.MessageEmbed()
+                                    .setTitle(":white_check_mark: Un-Muted " + toMute.displayName + " after " + indentifier)
+                                    .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                        dynamic: false,
+                                        format: 'png',
+                                        size: 512
+                                    }))
+                                    .setColor("GREEN")
+                                    .setTimestamp()
+                                    .setFooter("Muted by: " + msg.author.tag)
+                                toMute.roles.add(role);
+                                msg.channel.send({
+                                    embed: unmutedEmb
+                                })
+                                logchannel.send({
+                                    embed: unmutedEmb
+                                })
+                                toMute.roles.set(rolescache);
+                                role.delete();
+                            }, length);
+                        })
+                    } else {
+                        const specUser = new discord.MessageEmbed()
+                            .setTitle(":x: Specify someone to mute!")
+                            .setAuthor(bot.user.tag, bot.user.avatarURL({
+                                dynamic: false,
+                                format: 'png',
+                                size: 512
+                            }))
+                            .setColor("RED")
+                            .setTimestamp()
+                        return msg.channel.send({
+                            embed: specUser
+                        })
+                    }
                 }
+                break;
+                case 'warns':
+                    const warnsemb = new discord.MessageEmbed()
+                    if (msg.mentions.members.first() != undefined) {
+                        let score = getModeration(msg.mentions.members.first.id, msg.guild.id);
+                        let warns = score.warns
+                        warns = JSON.parse(warns)
+                        console.log(warns)
+                        warnsemb.setTitle(`${msg.mentions.members.first().user.username}` + "'s warns");
+                        if (warns[0] != undefined) {
+                            for (i = 0; i < warns.length; i++) {
+                                warnsemb.addField("Warn " + (i + 1), warns[i], false)
+                            }
+                        } else {
+                            warnsemb.addField("This user has no warns!")
+                        }
+                        warnsemb.setAuthor(bot.user.tag, bot.user.avatarURL({
+                            dynamic: false,
+                            format: 'png',
+                            size: 512
+                        }))
+                        warnsemb.setColor("BLUE")
+                        msg.channel.send({
+                            embed: warnsemb
+                        })
+                    } else {
+                        let score = getModeration(msg.author.id, msg.guild.id)
+                        let warns = score.warns
+                        warns = JSON.parse(warns)
+                        warnsemb.setTitle(msg.author.username + "'s warns");
+                        if (warns[0] != undefined) {
+                            for (i = 0; i < warns.length; i++) {
+                                warnsemb.addField("Warn" + (i + 1), warns[i], false)
+                            }
+                        } else {
+                            warnsemb.addField("This user has no warns!")
+                        }
+                        warnsemb.setAuthor(bot.user.tag, bot.user.avatarURL({
+                            dynamic: false,
+                            format: 'png',
+                            size: 512
+                        }))
+                        warnsemb.setColor("BLUE")
+                        msg.channel.send({
+                            embed: warnsemb
+                        })
+                    }
+
+
+
 
                     break;
                 case 'jobs.work.admin':
@@ -594,9 +845,9 @@ bot.on('message', async (msg) => {
                                 var comp = getCompany(msg.author.id, msg.guild.id);
 
                                 if (comp.companytype == 0) {
-                                    
+
                                     if (eco.cash - companies[i].price >= 0) {
-                                        
+
                                         comp.companytype = type;
                                         comp.lastchecked = Date.now()
                                         bot.setCompanies.run(comp)
@@ -672,7 +923,7 @@ bot.on('message', async (msg) => {
                             .addField("Production", `${production}/Hour`)
                             .addField(`Total Profit`, `$${company.totalprofit}`)
                             .addField(`Total products`, `${Math.floor(production/60*Math.floor(((Date.now()-company.lastchecked)/60000)))}`)
-                        
+
                         msg.channel.send(infoEmb);
                     }
                     break;
@@ -700,9 +951,9 @@ bot.on('message', async (msg) => {
 
                         var production = base_production + ((base_production / 10) * upgrades.upgrades["Production Speed"])
                         var products = Math.floor(production / 60 * Math.floor(((Date.now() - company.lastchecked) / 60000)))
-                        
+
                         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
-                        addExp(eco, (products * price_fluxuation[0])/10)
+                        addExp(eco, (products * price_fluxuation[0]) / 10)
                         addCash(msg.author.id, msg.guild.id, (products * price_fluxuation[0]));
                         const successemb = new discord.MessageEmbed()
                             .setTitle(`:white_check_mark: You sold your products for a profit of: $${(products*price_fluxuation[0])}`)
@@ -727,17 +978,17 @@ bot.on('message', async (msg) => {
                         sql.pragma("synchronous = 1");
                         sql.pragma("journal_mode = wal");
                     }
-                break;
+                    break;
                 case 'addexp':
-                    if(msg.member.hasPermission("ADMINISTRATOR")){
-                        var eco = getEco(msg.author.id,msg.guild.id,msg.author.username)
-                        var x = addExp(eco,parseInt(args[1]))
+                    if (msg.member.hasPermission("ADMINISTRATOR")) {
+                        var eco = getEco(msg.author.id, msg.guild.id, msg.author.username)
+                        var x = addExp(eco, parseInt(args[1]))
                         if (x) msg.reply(`You leveled up to lvl ${eco.lvl}!`);
                     }
-                break;
+                    break;
                 case 'kick':
-                    if(msg.member.hasPermission("ADMINISTRATOR"))
-                break;
+                    if (msg.member.hasPermission("ADMINISTRATOR"))
+                        break;
             }
         }
     }
