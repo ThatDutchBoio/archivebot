@@ -1,0 +1,30 @@
+{
+    "oil_company": {
+        "name": "Oil Company",
+        "base_production": 42,
+        "price_fluxuation" : [500,2500],
+        "id": "oil_company",
+        "price": 5000000,
+        "index": 1,
+        "base_upgradeprice": 500000
+    },
+    "tech_support": {
+        "name": "Tech Support Company",
+        "base_production": 10,
+        "price_fluxuation": [50,1250],
+        "id": "tech_support",
+        "price": 50000,
+        "index": 2,
+        "base_upgradeprice": 5000
+    },
+    "lemonade_stand": {
+        "name" : "Lemonade Stand",
+        "base_production": "10",
+        "price_fluxuation": [5,10],
+        "id": "lemonmade_stand",
+        "price": 50,
+        "index": 3,
+        "base_upgradeprice": 20
+        
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "homeless_man": {
+        "id": "homeless_man",
+        "index": 1,
+        "name" : "Homeless Man",
+        "income" : [0,100],
+        "message" : "You look through the local dump for any valuables.",
+        "cooldown" : 300,
+        "lvl" : 0
+    },
+    "dancer": {
+        "id" : "dancer",
+        "index": 2,
+        "name" : "Dancer",
+        "income" : [100,200],
+        "message" : "You dance gloriously and some rich men give you money for it.",
+        "cooldown" : 300,
+        "lvl" : 2
+    },
+    "police_officer" : {
+        "id": "police_officer",
+        "index": 3,
+        "name"  : "Police Officer",
+        "income" : [250,500],
+        "message" : "You arrest a drunk driver.",
+        "cooldown" : 300,
+        "lvl" : 5
+    }
+    
+}
