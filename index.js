@@ -51,6 +51,7 @@ bot.on('ready', () => {
 })
 
 function getEco(userId, guildId, username) {
+    console.log(`username: ${username}`)
     let score = bot.getEco.get(`${userId}_${guildId}`);
     if (!score) {
         score = {
@@ -142,11 +143,11 @@ function randomIntFromInterval(min, max) { // min and max included
 }
 var lastWorked = new Map();
 bot.on('message', async (msg) => {
-    if (!msg.author.bot && msg.guild.id != "367089912425480192") {
+    if (!msg.author.bot && msg.guild.id != "769655079174930462") {
 
         var user = msg.guild.members.cache.find(i => i.id === msg.author.id)
         console.log(user.user.username)
-        var eco1 = getEco(msg.author.id, msg.guild.id, msg.author.user)
+        var eco1 = getEco(msg.author.id, msg.guild.id, msg.author.username)
         const lvlroles = require("./jsonFiles/lvlroles.json");
         for (var i in lvlroles) {
             if (eco1.lvl >= lvlroles[i].levelrequired) {
