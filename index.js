@@ -162,13 +162,13 @@ bot.on('message', async (msg) => {
         console.log(user.user.username)
         var eco1 = getEco(msg.author.id, msg.guild.id, msg.author.username)
         const lvlroles = require("./jsonFiles/lvlroles.json");
-        for (var i in lvlroles) {
-            if (eco1.lvl >= lvlroles[i].levelrequired) {
-                var role = msg.guild.roles.cache.find(r => r.id === lvlroles[i].id)
-
-                user.roles.add(role)
-            }
-        }
+        //for (var i in lvlroles) {
+       //     if (eco1.lvl >= lvlroles[i].levelrequired) {
+       //         var role = msg.guild.roles.cache.find(r => r.id === lvlroles[i].id)
+//
+       //         user.roles.add(role)
+       //     }
+       // }
         let args = msg.content.substring(prefix.length).split(' ');
         let cName = msg.channel.name
         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
@@ -371,7 +371,48 @@ bot.on('message', async (msg) => {
                     }
 
                     return msg.channel.send("Invalid Job ID!");
-                    break;
+                break;
+                case 'announce':
+                    if(msg.member.hasPermission("ADMINISTRATOR")){
+                        const anounceembed = new discord.MessageEmbed()
+                        const promptContent = async () =>{
+                            
+                            msg.reply("What message would you like to send?").then(promptmessage =>{
+                                msg.channel.awaitMessages(m => m.author.id === msg.author.id,{
+                                    max:1,
+                                    time:60000
+                                }).then(collected =>{
+                                    var content = collected.first().content
+                                    msg.reply(`Is this correct?: ${collected.first().content}`).then( async msg =>{
+                                        await msg.react('✔')
+                                        await msg.react('❌')
+                                        msg.awaitReactions((user,emoji) =>{
+                                            return user.id === msg.author.id
+                                        },{
+                                            max:1,
+                                            time:60000
+                                        }).then(collected =>{
+                                            console.log('worked')
+                                            switch(collected.first().emoji.name){
+                                                case '✔':
+                                                    console.log("checkmark")
+                                                    anounceembed.setTitle(content)
+                                                break;
+                                                case '❌':
+                                                    console.log("x")
+                                                promptmessage.delete()
+                                                promptContent()
+                                                break;
+                                            }
+                                        })
+                                    })
+                                })
+                            })
+                        }
+                        promptContent()
+                        
+                    }
+                break;
                 case 'ban':
 
                     if (msg.member.hasPermission("BAN_MEMBERS") && msg.mentions.members.first() != undefined) {
@@ -557,7 +598,7 @@ bot.on('message', async (msg) => {
                     }
 
                     break;
-                    case 'mute':
+                case 'mute':
                 if (msg.member.hasPermission("MUTE_MEMBERS")) {
                     if (msg.mentions.members.first() != undefined) {
                         let toMute = msg.mentions.members.first();
@@ -1016,7 +1057,7 @@ bot.on('message', async (msg) => {
                         addExp(eco, (products * price_fluxuation[0]) / 100)
                         addCash(msg.author.id, msg.guild.id, (products * price_fluxuation[0]));
                         const successemb = new discord.MessageEmbed()
-                            .setTitle(`:white_check_mark: You sold your products for a profit of: $${(products*price_fluxuation[0])}`)
+                            .setTitle(`:white_check_mark: You sold your products for a profit of: $${(products*price_fluxuation[1])}`)
                             .setColor("GREEN")
                         msg.channel.send(successemb)
                         company.lastchecked = Date.now();
