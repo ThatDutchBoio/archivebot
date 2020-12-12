@@ -966,7 +966,7 @@ bot.on('message', async (msg) => {
                         var products = Math.floor(production / 60 * Math.floor(((Date.now() - company.lastchecked) / 60000)))
 
                         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
-                        addExp(eco, (products * price_fluxuation[0]) / 10)
+                        addExp(eco, (products * price_fluxuation[0]) / 100)
                         addCash(msg.author.id, msg.guild.id, (products * price_fluxuation[0]));
                         const successemb = new discord.MessageEmbed()
                             .setTitle(`:white_check_mark: You sold your products for a profit of: $${(products*price_fluxuation[0])}`)
