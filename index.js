@@ -329,6 +329,9 @@ bot.on('message', async (msg) => {
                     }
                     msg.channel.send(jobsemb);
                     break;
+                case 'suggestion':
+                    msg.reply("If you have found either a bug or have a suggestion for the bot make sure to leave an issue on the bot's github https://github.com/ThatDutchBoio/archivebot/issues")
+                break;
                 case 'jobs.join':
                     var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
                     var x = msg.content;
