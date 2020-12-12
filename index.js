@@ -150,6 +150,7 @@ function addExp(eco, amnt) {
 
     return x;
 }
+var anounceDebounce = true
 var oldRoles = new Map()
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -374,43 +375,196 @@ bot.on('message', async (msg) => {
                 break;
                 case 'announce':
                     if(msg.member.hasPermission("ADMINISTRATOR")){
+                        const x = true
                         const anounceembed = new discord.MessageEmbed()
-                        const promptContent = async () =>{
-                            
-                            msg.reply("What message would you like to send?").then(promptmessage =>{
+                            .setTitle(`${msg.author.tag}'s announcement`)
+                        
+                        const promptColor = async () =>{
+                            msg.reply("What color would you like to make the embed?").then(async () =>{
                                 msg.channel.awaitMessages(m => m.author.id === msg.author.id,{
                                     max:1,
                                     time:60000
                                 }).then(collected =>{
-                                    var content = collected.first().content
-                                    msg.reply(`Is this correct?: ${collected.first().content}`).then( async msg =>{
-                                        await msg.react('✔')
-                                        await msg.react('❌')
-                                        msg.awaitReactions((user,emoji) =>{
-                                            return user.id === msg.author.id
-                                        },{
-                                            max:1,
-                                            time:60000
-                                        }).then(collected =>{
-                                            console.log('worked')
-                                            switch(collected.first().emoji.name){
-                                                case '✔':
-                                                    console.log("checkmark")
-                                                    anounceembed.setTitle(content)
-                                                break;
-                                                case '❌':
-                                                    console.log("x")
-                                                promptmessage.delete()
-                                                promptContent()
-                                                break;
-                                            }
+                                    var promptColor = collected.first().content
+                                    promptColor = promptColor.toUpperCase()
+                                    msg.reply(`Is this the color you want?: ${collected.first().content}`).then(async promptmessage =>{
+                                        await promptmessage.react('✔').then(async () =>{
+                                            await promptmessage.react('❌').then(async () =>{
+                                                bot.on('messageReactionAdd',(react,user) =>{
+                                                    if(react.message.id === promptmessage.id && user.id == msg.author.id){
+                                                        switch(react.emoji.name){
+                                                            case '✔':
+                                                            promptColor = promptColor.substring(' ').join('');
+                                                            anounceembed.setColor(promptColor);
+                                                            sendEmb()
+                                                            return true;
+                                                            break;
+                                                            case '❌':
+                                                                promptColor()
+                                                            break;
+                                                        }
+                                                    }
+                                                })
+                                            })
                                         })
                                     })
                                 })
                             })
                         }
-                        promptContent()
+
+                        const promptContent = async () =>{
+                            
+                            msg.reply("What message would you like to send?").then(() =>{
+                                msg.channel.awaitMessages(m => m.author.id === msg.author.id,{
+                                    max:1,
+                                    time:60000
+                                }).then(collected =>{
+                                    var content = collected.first().content
+                                    msg.reply(`Is this correct?: ${collected.first().content}`).then( async promptmessage =>{
+                                        await promptmessage.react('✔').then( async () =>{
+                                            await promptmessage.react('❌').then( async () =>{
+                                                bot.on('messageReactionAdd', (react,user) =>{
+                                                    console.log(`react: ${react.message.id}, promptmessage: ${promptmessage.id}`)
+                                                    if(react.message.id == promptmessage.id && user.id === msg.author.id){
+                                                        switch(react.emoji.name){
+                                                            case '✔':
+                                                                anounceembed.setDescription(content)
+                                                                if(!anounceDebounce){
+                                                                    return true
+                                                                }else{
+                                                                    anounceDebounce = true
+                                                                    //🄰 🄱 🄲 🄳 🄴 🄵 🄶 🄷 🄸 🄹 🄺 🄻 🄼 🄽 🄾 🄿 🅀 🅁 🅂 🅃 🅄 🅅 🅆 🅇 🅈 🅉
+                                                                    const optList = new discord.MessageEmbed()
+                                                                        .setColor("BLUE")
+                                                                        .setTitle("Customization options")
+                                                                        .setDescription('Click one of these emojis to edit a certain property')
+                                                                        .addField('Description','🄰')
+                                                                        .addField('Color','🄱')
+                                                                        .addField('Image','🄲')
+                                                                        .addField('Footer','🄳')
+                                                                        .addField('Thumbnail','🄴')
+                                                                        .addField('Url','🄵')
+                                                                        .addField('Finish','🄶')
+                                                                    msg.channel.send(optList)
+                                                                    msg.channel.send(anounceembed).then(anEmb =>{
+                                                                        anEmb.react('🄰')
+                                                                        anEmb.react('🄱')
+                                                                        anEmb.react('🄲')
+                                                                        anEmb.react('🄳')
+                                                                        anEmb.react('🄴')
+                                                                        anEmb.react('🄶')
+                                                                        anEmb.react('🄵').then(embed =>{
+                                                                            bot.on("messageReactionAdd", (react,user) =>{
+                                                                                if(react.message.id === embed.message.id && user.id == msg.author.id){
+                                                                                    switch(react.emoji.name){
+                                                                                        case '🄰':
+                                                                                            promptContent()
+                                                                                        break;
+                                                                                        case '🄱':
+                                                                                            promptColor()
+                                                                                        break;
+                                                                                        case '🄲':
+                                                                                            promptImage()
+                                                                                        break;
+                                                                                        case '🄳':
+                                                                                            //footer
+                                                                                        break;
+                                                                                        case '🄴':
+                                                                                            //thumbnail
+                                                                                        break;
+                                                                                        case '🄵':
+                                                                                            //url
+                                                                                        break;
+                                                                                    }
+                                                                                    return;
+                                                                                }
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                }
+                                                            break;
+                                                            case '❌':
+                                                                promptmessage.delete()
+                                                                promptContent()
+                                                            break;
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        }
+
+                        const promptImage = async () =>{
+                            msg.reply("Please send the image you want to use in chat").then(async () => {
+                                msg.channel.awaitMessages(m => m.author.id === msg.author.id,{
+                                    max:1,
+                                    time:60000
+                                }).then(collected =>{
+                                    if(!collected.message.attachments.first()){
+                                        msg.reply("please send an image!");
+                                        promptImage()
+                                    }else{
+                                        anounceembed.setImage(collected.attachments.first().url)
+                                        sendEmb()
+                                    }
+                                })
+                            })
+                        }
+
+                        const sendEmb = async () =>{
+                            const optList = new discord.MessageEmbed()
+                                .setColor("BLUE")
+                                .setTitle("Customization options")
+                                .setDescription('Click one of these emojis to edit a certain property')
+                                .addField('Description','🄰')
+                                .addField('Color','🄱')
+                                .addField('Image','🄲')
+                                .addField('Footer','🄳')
+                                .addField('Thumbnail','🄴')
+                                .addField('Url','🄵')
+                                .addField('Finish','🄶')
+                            msg.channel.send(optList)
+                            msg.channel.send(anounceembed).then(anEmb =>{
+                                anEmb.react('🄰')
+                                anEmb.react('🄱')
+                                anEmb.react('🄲')
+                                anEmb.react('🄳')
+                                anEmb.react('🄴')
+                                anEmb.react('🄶')
+                                anEmb.react('🄵').then(embed =>{
+                                    bot.on("messageReactionAdd", (react,user) =>{
+                                        if(react.message.id === embed.message.id && user.id == msg.author.id){
+                                            switch(react.emoji.name){
+                                                case '🄰':
+                                                    promptContent()
+                                                break;
+                                                case '🄱':
+                                                    //color
+                                                break;
+                                                case '🄲':
+                                                    //image
+                                                break;
+                                                case '🄳':
+                                                    //footer
+                                                break;
+                                                case '🄴':
+                                                    //thumbnail
+                                                break;
+                                                case '🄵':
+                                                    //url
+                                                break;
+                                            }
+                                            return;
+                                        }
+                                    })
+                                })
+                            })
+                        }
                         
+                        promptContent()
                     }
                 break;
                 case 'ban':
