@@ -7,6 +7,7 @@ const {
 const db = require('better-sqlite3');
 const sql = new db('./data.sqlite');
 const jobs = require('./jsonFiles/jobs.json');
+const { getRandomMeme, getLocalRandomMeme} = require('@blad3mak3r/reddit-memes')
 const {
     SqliteError
 } = require('better-sqlite3');
@@ -206,7 +207,50 @@ bot.on('message', async (msg) => {
 
 
 
-                    break;
+                break;
+                case 'purge':
+                if (msg.member.hasPermission("MANAGE_MESSAGES")) {
+
+                    let msgCount = parseInt(args[1]);
+                    const limit = 1000;
+                    if (msgCount <= limit) {
+                        msg.channel.bulkDelete(msgCount + 1);
+                    }
+
+
+                }
+                break;
+                case 'info':
+                const serverinfo = new discord.MessageEmbed()
+                    .setTitle("Info on server: " + msg.guild.name)
+                    .setColor("BLUE")
+                    .setAuthor(bot.user.tag, bot.user.avatarURL({
+                        dynamic: false,
+                        format: 'png',
+                        size: 512
+                    }))
+                    .addField("Member count", msg.guild.memberCount, false)
+                    .addField("Date made", new Date(msg.guild.createdTimestamp), false)
+                    .addField("Boosts", msg.guild.premiumSubscriptionCount, false)
+
+                msg.channel.send({
+                    embed: serverinfo
+                })
+
+
+                break;
+                case 'meme':
+                    console.log('meme')
+                    let meme = getRandomMeme()
+                    const memeemb = new discord.MessageEmbed()
+                        .setTitle(`${(await meme).title} **by** ${(await meme).author}`)
+                        .setDescription(`Upvotes 👍: ${(await meme).ups}`)
+                        .setImage((await meme).image)
+                        .setColor("ORANGE")
+                    msg.channel.send({
+                        embed: memeemb
+                    })
+                break;
                 case 'bal':
                     if (!msg.mentions.members.first()) {
                         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);

@@ -1,6 +1,6 @@
 {
   "name": "devarchives",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "Dutch",
   "license": "ISC",
   "dependencies": {
+    "@blad3mak3r/reddit-memes": "^0.2.4",
     "better-sqlite3": "^7.1.1",
     "discord.js": "^12.4.1"
   }
