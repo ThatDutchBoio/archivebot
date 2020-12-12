@@ -14,7 +14,7 @@ const {
 bot.on('ready', () => {
 
     console.log('bot online');
-    bot.user.setActivity("Prefix: ';'");
+    
     const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'eco';").get();
     if (!table['count(*)']) {
         sql.prepare("CREATE TABLE eco(id TEXT PRIMARY KEY,xp INT,lvl INT,cash INT,jobid TEXT,username TEXT);").run();
@@ -48,6 +48,18 @@ bot.on('ready', () => {
     }
     bot.getModeration = sql.prepare("SELECT * FROM moderation WHERE id = ?");
     bot.setModeration = sql.prepare("INSERT OR REPLACE INTO moderation (id,warns) VALUES (@id,@warns);");
+
+
+    var x = ["Prefix: ';'","Submit and bug reports or suggested features on the bot's github https://github.com/ThatDutchBoio/archivebot/issues"]
+    var y = () =>{
+        for(var i in x){
+            bot.user.setActivityx[i]
+            setTimeout(() => {
+                
+            }, 10000);
+        }
+        y()
+    }
 })
 
 function getEco(userId, guildId, username) {

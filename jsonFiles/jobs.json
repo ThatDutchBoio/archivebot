@@ -15,7 +15,7 @@
         "income" : [100,200],
         "message" : "You dance gloriously and some rich men give you money for it.",
         "cooldown" : 300,
-        "lvl" : 2
+        "lvl" : 5
     },
     "police_officer" : {
         "id": "police_officer",
@@ -24,7 +24,7 @@
         "income" : [250,500],
         "message" : "You arrest a drunk driver.",
         "cooldown" : 300,
-        "lvl" : 5
+        "lvl" : 15
     }
     
 }
