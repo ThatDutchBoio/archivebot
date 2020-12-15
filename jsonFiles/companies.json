@@ -41,7 +41,7 @@
         "base_production": 75,
         "price_fluxuation" : [10,60],
         "id": "clothing_store",
-        "price": 1000,
+        "price": 10000,
         "index": 5,
         "base_upgradeprice": 500
     }

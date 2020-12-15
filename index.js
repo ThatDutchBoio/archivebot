@@ -148,7 +148,7 @@ function addExp(eco, amnt) {
     var x = false;
     eco.xp += amnt;
     // 10 * (5 + (5*x))
-    for (var i = eco.lvl; eco.xp >= (10 + ((10 * i) + (15.5 * i + 1))); i++) {
+    for (var i = eco.lvl; eco.xp >= (10 + ((10 * i) + (15.5 * i + i))); i++) {
         eco.lvl++
         x = true
     }
@@ -782,11 +782,6 @@ bot.on('message', async (msg) => {
                     }
                     break;
                     //var elapsed = Math.ceil((Date.now()-lastWorked.get(msg.author.id))/1000)
-                case 'givecash':
-                    var xEco = getEco(msg.author.id, msg.guild.id, msg.author.username);
-                    var yEco = getEco(msg.mentions.members.first().id, msg.guild.id, msg.mentions.members.first().user.username);
-
-                    break;
                 case 'jobs.work':
                     var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
                     if (eco.jobid != "none") {
@@ -1014,14 +1009,14 @@ bot.on('message', async (msg) => {
                     break;
                 case 'xpneeded':
                     var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
-                    return msg.reply(`${10 + (10 + (15.5*eco.lvl+1))} needed for lvl: ${eco.lvl+1}`);
+                    return msg.reply(`${ (10 + ((10 * eco.lvl) + (15.5 * eco.lvl + eco.lvl)))} needed for lvl: ${eco.lvl+1}`);
                     break;
                 case 'lvl':
                     if (!msg.mentions.members.first()) {
                         var eco = getEco(msg.author.id, msg.guild.id, msg.author.username);
                         const lvlemb = new discord.MessageEmbed()
                             .setTitle(`${msg.author.username}'s level: ${eco.lvl}`)
-                            .setDescription(`XP: ${eco.xp}/${(10 + ((10*eco.lvl) + (15.5 * eco.lvl + 1)))}`)
+                            .setDescription(`XP: ${eco.xp}/${(10 + ((10 * eco.lvl) + (15.5 * eco.lvl + eco.lvl)))}`)
                             .setTimestamp()
                             .setColor("BLUE")
                         msg.channel.send(lvlemb);
@@ -1029,7 +1024,7 @@ bot.on('message', async (msg) => {
                         var eco = getEco(msg.mentions.members.first().id, msg.guild.id, msg.mentions.members.first().user.username);
                         const lvlemb = new discord.MessageEmbed()
                             .setTitle(`${msg.mentions.members.first().user.username}'s level: ${eco.lvl}`)
-                            .setDescription(`XP: ${eco.xp}/${10 + (10 + (15.5*eco.lvl+1))}`)
+                            .setDescription(`XP: ${(10 + ((10 * eco.lvl) + (15.5 * eco.lvl + eco.lvl)))}`)
                             .setTimestamp()
                             .setColor("BLUE")
                         msg.channel.send(lvlemb);
