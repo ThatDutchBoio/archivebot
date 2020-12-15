@@ -19,12 +19,30 @@
     },
     "lemonade_stand": {
         "name" : "Lemonade Stand",
-        "base_production": "10",
+        "base_production": 10,
         "price_fluxuation": [5,10],
         "id": "lemonmade_stand",
         "price": 50,
         "index": 3,
         "base_upgradeprice": 20
         
+    },
+    "software_company": {
+        "name": "Software Company",
+        "base_production": 3,
+        "price_fluxuation": [10000,50000],
+        "id": "software_company",
+        "price": 10000000,
+        "index": 4,
+        "base_upgradeprice": 100000
+    },
+    "clothing_store": {
+        "name": "Clothing Store",
+        "base_production": 75,
+        "price_fluxuation" : [10,60],
+        "id": "clothing_store",
+        "price": 1000,
+        "index": 5,
+        "base_upgradeprice": 500
     }
 }

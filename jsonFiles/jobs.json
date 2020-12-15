@@ -3,7 +3,7 @@
         "id": "homeless_man",
         "index": 1,
         "name" : "Homeless Man",
-        "income" : [0,100],
+        "income" : [0,500],
         "message" : "You look through the local dump for any valuables.",
         "cooldown" : 300,
         "lvl" : 0
@@ -12,7 +12,7 @@
         "id" : "dancer",
         "index": 2,
         "name" : "Dancer",
-        "income" : [100,200],
+        "income" : [500,1000],
         "message" : "You dance gloriously and some rich men give you money for it.",
         "cooldown" : 300,
         "lvl" : 5
@@ -21,10 +21,28 @@
         "id": "police_officer",
         "index": 3,
         "name"  : "Police Officer",
-        "income" : [250,500],
+        "income" : [1000,5000],
         "message" : "You arrest a drunk driver.",
         "cooldown" : 300,
         "lvl" : 15
+    },
+    "pharmacist" : {
+        "id": "pharmacist",
+        "index": 4,
+        "name": "Pharmacist",
+        "income": [5000,7500],
+        "message": "You refilled old man John's medication",
+        "cooldown": 300,
+        "lvl" : 20
+    },
+    "weapons_dealer" : {
+        "id": "weapons_dealer",
+        "index": 5,
+        "name": "Weapons Dealer",
+        "income": [7500,12500],
+        "message": "You sell a gun to a law abiding citizen",
+        "cooldown": 300,
+        "lvl": 25
     }
     
 }
